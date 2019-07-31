@@ -1,0 +1,34 @@
+version: '3'
+
+networks:
+  frontend:
+    driver: ${NETWORKS_DRIVER}
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  mysql:
+    driver: ${VOLUMES_DRIVER}
+  redis:
+    driver: ${VOLUMES_DRIVER}
+  elasticsearch:
+    driver: ${VOLUMES_DRIVER}
+services:
+  workspace:
+      image: spafftank/phocker:latest
+      volumes:
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+      ports:
+        - "${WORKSPACE_SSH_PORT}:22"
+      networks:
+        - frontend
+        - backend
+  nginx:
+    image: spafftank/phocker-nginx:latest
+    ports:
+      - "1111:80"
+      - "443:443"
+    volumes:
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
+    networks:
+      - backend
